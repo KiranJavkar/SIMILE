@@ -1,6 +1,6 @@
 # SIMILE: Discover shared genomic regions across a collection of metagenomic samples
 
-Given a collection of metagenome-assembled-genomes (MAGs), extract the contigs that represent the genomic regions that are shared across a certain proportion (\phi) of the given MAGs i.e. metagenomic samples.
+Given a collection of metagenome-assembled-genomes (MAGs), extract the contigs that represent the genomic regions that are shared across a certain proportion ($\phi$) of the given MAGs i.e. metagenomic samples.
 
 ### Dependencies
 1. Python 3.5 or later
