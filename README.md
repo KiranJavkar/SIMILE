@@ -9,7 +9,7 @@ Given a collection of metagenome-assembled-genomes (MAGs), extract the contigs t
 ### Installation:
 ```bash
 git clone https://github.com/KiranJavkar/SIMILE.git
-cd PRAWNS
+cd SIMILE
 make
 ```
 
