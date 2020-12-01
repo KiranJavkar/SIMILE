@@ -265,6 +265,10 @@ void generate_binned_sampled_kmers(string fasta_filename, list< map< ulli, ulli 
     ulli position = 1; // Following the convention from jellyfish, mummer etc.
 
     ifstream input_file(fasta_filename);
+    if(!input_file){
+        cout<<"ERROR!!! UNABLE TO ACCESS FASTA FILE!!! "<<fasta_filename<<"\n";
+        return;
+    }
     string line;
     bool list_reset = false; // Used for moving the kmer length window through vector
     ps_pullib kmer_idx_strand_pair;

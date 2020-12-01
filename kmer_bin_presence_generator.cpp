@@ -174,6 +174,9 @@ void locate_and_save_filtered_kmer_bin_presence(string binned_kmer_dir, string a
     inFile_binned_mer_repeat.open(binned_kmer_dir + assembly_idx_str + "_" + prefix_idx_str + "_mer_repeat", ios::binary);
     inFile_binned_contig_bin_repeat.open(binned_kmer_dir + assembly_idx_str + "_" + prefix_idx_str + "_bin_repeat", ios::binary);
 
+    cout<<binned_kmer_dir + assembly_idx_str + "_" + prefix_idx_str + "_mer_repeat"<<"\t";
+    cout<<binned_kmer_dir + assembly_idx_str + "_" + prefix_idx_str + "_bin_repeat"<<"\n";
+
     inFile_binned_mer_repeat.read((char*) (&repeat_binned_count), sizeof(repeat_binned_count));
     inFile_binned_contig_bin_repeat.read((char*) (&repeat_check), sizeof(repeat_check));
 
@@ -216,6 +219,63 @@ void locate_and_save_filtered_kmer_bin_presence(string binned_kmer_dir, string a
     it_repeat_bins_outerlist = repeat_kmer_bins_list.begin();
 
     while( (binned_count>0 || it_repeat_suffix != repeat_kmer_suffixes_list.end()) &&
+            it_filtered_suffix != filtered_suffix_list.end() && it_end_bin != end_bins_list.end()){
+        //TO DO: check if the filtered kmer is a repeat kmer: if yes, append the corresponding bins in a file:: use the bins from this file to update the maps later
+
+        if(binned_count > 0){
+            inFile_binned_mer.read((char*) (&assembly_suffix_idx), sizeof(assembly_suffix_idx));
+            inFile_binned_contig_bin.read((char*) (&current_bin_no), sizeof(current_bin_no));
+
+            while(it_end_bin != end_bins_list.end() && current_bin_no > *it_end_bin)
+                it_end_bin++;
+
+            if(it_end_bin == end_bins_list.end()){
+                cout<<"ALERT!!! ERROR IN PARSING AND MAPPING CONTIG BINS: "<<current_bin_no<<" "<<assembly_idx_str<<" "<<prefix_idx_str<<"\n";
+                continue;
+            }
+        }
+
+        while( it_filtered_suffix != filtered_suffix_list.end() && it_repeat_suffix != repeat_kmer_suffixes_list.end() &&
+                (( binned_count>0 && assembly_suffix_idx > *it_repeat_suffix) || ( binned_count==0)) ){
+            // Check if the repeat kmer is a filtered kmer
+            if( *it_filtered_suffix < *it_repeat_suffix){
+                it_filtered_suffix++;
+                continue;
+            }
+            else{
+                if( *it_filtered_suffix == *it_repeat_suffix){
+                    // Add corresponding kmer bins into a list to be used to update the maps
+                    inner_bins_list.insert(inner_bins_list.end(), (*it_repeat_bins_outerlist).begin(), (*it_repeat_bins_outerlist).end());
+                    cout<<"\trepeat kmer (I): ("<<prefix_idx_str<<","<< *it_repeat_suffix <<"): "<<inner_bins_list.size()<<"\n";
+                }
+                // To be incremented even if the repeat kmer is not filtered selected
+                it_repeat_suffix++;
+                it_repeat_bins_outerlist++;
+            }
+        }
+
+        if(binned_count > 0){
+            while(it_filtered_suffix != filtered_suffix_list.end() && assembly_suffix_idx > *it_filtered_suffix)
+                it_filtered_suffix++;
+
+            if((it_filtered_suffix != filtered_suffix_list.end()) && (*it_filtered_suffix == assembly_suffix_idx)){
+                // current sampled k-mer is present in multiple samples
+                
+                it_contig_bin_map = contig_bin_representation_map.find( *it_end_bin );
+
+                if(it_contig_bin_map == contig_bin_representation_map.end()){
+                    contig_bin_representation_map[ *it_end_bin ] = 1;
+                }
+                else{
+                    contig_bin_representation_map[ *it_end_bin ] += 1;
+                }
+            }
+
+            binned_count--;
+        }
+    }
+
+    /*while( (binned_count>0 || it_repeat_suffix != repeat_kmer_suffixes_list.end()) &&
             it_filtered_suffix != filtered_suffix_list.end() && it_end_bin != end_bins_list.end()){
         //TO DO: check if the filtered kmer is a repeat kmer: if yes, append the corresponding bins in a file:: use the bins from this file to update the maps later
         inFile_binned_mer.read((char*) (&assembly_suffix_idx), sizeof(assembly_suffix_idx));
@@ -266,7 +326,7 @@ void locate_and_save_filtered_kmer_bin_presence(string binned_kmer_dir, string a
                 }
             }
         }
-    }
+    }*/
 
     inFile_binned_mer.close();
     inFile_binned_contig_bin.close();
@@ -282,7 +342,7 @@ void locate_and_save_filtered_kmer_bin_presence(string binned_kmer_dir, string a
             if( *it_filtered_suffix == *it_repeat_suffix){
                 // Add corresponding kmer bins into a list to be used to update the maps
                 inner_bins_list.insert(inner_bins_list.end(), (*it_repeat_bins_outerlist).begin(), (*it_repeat_bins_outerlist).end());
-                cout<<"\trepeat kmer: ("<<prefix_idx_str<<","<< *it_repeat_suffix <<"): "<<inner_bins_list.size()<<"\n";
+                cout<<"\trepeat kmer (II): ("<<prefix_idx_str<<","<< *it_repeat_suffix <<"): "<<inner_bins_list.size()<<"\n";
             }
             // To be incremented even if the repeat kmer is not filtered selected
             it_repeat_suffix++;

@@ -93,17 +93,17 @@ def cpp_dir_input_setup(assemblies, fasta_file_list, ncores, contig_feature_part
     core_idx = 0
     partition_start = 0
 
-    for partition_end in assembly_partition_pos_arr:
-        opstr = '\n'.join(fasta_file_list[partition_start:partition_end])+'\n'
-        write_file("{}input_binned_assemblies_{}.txt".format(outdir, core_idx), opstr)
-        core_idx += 1
-        partition_start = partition_end
-    if(partition_start<assembly_count):
-        opstr = '\n'.join(fasta_file_list[partition_start:assembly_count])+'\n'
-        write_file("{}input_binned_assemblies_{}.txt".format(outdir, core_idx), opstr)
+    # for partition_end in assembly_partition_pos_arr:
+    #     opstr = '\n'.join(fasta_file_list[partition_start:partition_end])+'\n'
+    #     write_file("{}input_binned_assemblies_{}.txt".format(outdir, core_idx), opstr)
+    #     core_idx += 1
+    #     partition_start = partition_end
+    # if(partition_start<assembly_count):
+    #     opstr = '\n'.join(fasta_file_list[partition_start:assembly_count])+'\n'
+    #     write_file("{}input_binned_assemblies_{}.txt".format(outdir, core_idx), opstr)
 
-    opstr = '\n'.join(fasta_file_list) + '\n'
-    write_file("{}all_assembly_filepaths.txt".format(outdir), opstr)
+    # opstr = '\n'.join(fasta_file_list) + '\n'
+    # write_file("{}all_assembly_filepaths.txt".format(outdir), opstr)
 
 
     contig_feature_step = math.ceil(assembly_count/(float)(contig_feature_partitions))
@@ -334,17 +334,17 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--input', required=True, help="Input csv file")
     parser.add_argument('-n', '--ncores', type=int, nargs='?', default=8,
                         help="Number of cores to be used (default: 8)")
-    parser.add_argument('-K', '--kmer_len', type=int, nargs='?', default=25,
-                        help="Length of kmers (default: 25)")
+    parser.add_argument('-K', '--kmer_len', type=int, nargs='?', default=15,
+                        help="Length of kmers (default: 15)")
     parser.add_argument('-p', '--min_perc', type=float, nargs='?', default=5.0,
                         help="Minimum %% of samples that should contain the shared region (default: 5.0)")
     parser.add_argument('-f', '--sampling_frequency', type=float, nargs='?', default=1.0,
                         help="Proportion of k-mers to be sampled and selected for comparisons (default 1.0)")
     parser.add_argument('-b', '--bin_size', type=int, nargs='?', default=1000,
                         help="Size of bins for sampling the k-mers (default: 1000)")
-    parser.add_argument('-c', '--sampled_kmer_contig_presence', type=float, nargs='?', default=40.0,
+    parser.add_argument('-c', '--sampled_kmer_contig_presence', type=float, nargs='?', default=25.0,
                         help="Minimum %% of the sampled k-mers that should have shared presence for the contig to be "+
-                            "considered as a shared contig (default: 40.0)")
+                            "considered as a shared contig (default: 25.0)")
     parser.add_argument('-m', '--mem', nargs='?', default="36000MB", help="Upper limit for RAM memory usage.  " +
                         "Can be in mb/MB/gb/GB/tb/TB (case insensitive), default unit is MB. (default: 36000MB)")
     
@@ -462,6 +462,8 @@ if __name__ == "__main__":
     end = time.time() # timeit.timeit()
     print('TIME taken to get filtered prefix binned kmers\' assemblywise bin presence:', end-start)
 
+    remove_file("{}binned_kmers/".format(results_dir))
+
 
     # contig_presence_threshold = 40.0
     start = time.time()
@@ -473,4 +475,3 @@ if __name__ == "__main__":
             for assembly_idx in range(assembly_count))
     end = time.time() # timeit.timeit()
     print('TIME taken to fetch shared contigs:', end-start)
-
