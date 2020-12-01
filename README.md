@@ -34,7 +34,7 @@ optional arguments:
   -n [NCORES], --ncores [NCORES]
                         Number of cores to be used (default: 8)
   -K [KMER_LEN], --kmer_len [KMER_LEN]
-                        Length of kmers (default: 25)
+                        Length of kmers (default: 15)
   -p [MIN_PERC], --min_perc [MIN_PERC]
                         Minimum % of samples that should contain the shared
                         region (default: 5.0)
@@ -46,7 +46,7 @@ optional arguments:
   -c [SAMPLED_KMER_CONTIG_PRESENCE], --sampled_kmer_contig_presence [SAMPLED_KMER_CONTIG_PRESENCE]
                         Minimum % of the sampled k-mers that should have
                         shared presence for the contig to be considered as a
-                        shared contig (default: 40.0)
+                        shared contig (default: 25.0)
   -m [MEM], --mem [MEM]
                         Upper limit for RAM memory usage. Can be in
                         mb/MB/gb/GB/tb/TB (case insensitive), default unit is
